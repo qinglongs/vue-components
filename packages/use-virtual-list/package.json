@@ -1,6 +1,6 @@
 {
   "name": "use-virtual-list",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "虚拟滚动(带自动轮播分页)列表",
   "main": "src/index.js",
   "scripts": {
