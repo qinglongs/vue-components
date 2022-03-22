@@ -1,0 +1,23 @@
+{
+  "name": "use-scroll-paging",
+  "version": "0.0.1",
+  "description": "vue分页请求hooks",
+  "main": "src/index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rollup --config rollup.config.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qinglongs/vue-components.git"
+  },
+  "keywords": [
+    "分页请求"
+  ],
+  "author": "lqllm",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/qinglongs/vue-components/issues"
+  },
+  "homepage": "https://github.com/qinglongs/vue-components#readme"
+}

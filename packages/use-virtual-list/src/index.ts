@@ -1,10 +1,14 @@
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, reactive } from 'vue';
+import useScrollPaging from 'use-scroll-paging';
 
-type Option = {
-  swiper: boolean
+type Option<T, R> = {
+  swiper: boolean,
+  extraParams?: T;
+  formatResponseData?: (data: R) => any;
 }
 
-const useVirtualList = (list: any[], itemHeight: number, option: Option = { swiper: true }) => {
+
+const useVirtualList = <T, R>(list: any[], itemHeight: number, option: Option<T, R> = { swiper: true }) => {
   // 可视区域容器节点
   const containerRef = ref<HTMLElement>();
   // 内容节点
@@ -17,6 +21,8 @@ const useVirtualList = (list: any[], itemHeight: number, option: Option = { swip
 
   // 铺满一屏需要的数据(动态的)
   const renderList = ref<any[]>([]);
+
+  const { scrollToBottom } = useScrollPaging({ isPaging: true, formatResponseData: (data) => data, })
 
   // 铺满一屏需要的数据量
   let _showNumber = 0;
@@ -35,72 +41,13 @@ const useVirtualList = (list: any[], itemHeight: number, option: Option = { swip
   // 滚动条偏移度
   let _offest = 0;
 
-  /**
-   *@method 滚动事件
-   */
-  const onScroll = () => {
-    if (_isPause) {
-      _offest = +(containerRef.value as HTMLElement).scrollTop.toFixed(0);
-    }
-    checkScrollToBottom();
-    setScreenrenderList();
-  };
+
+
 
   /**
-   * @method 开启自动滚动
-   */
-  const startAutoScroll = () => {
-      const content = containerRef.value as HTMLElement;
-      const { swiper } = option;
-      if (!swiper || content.scrollHeight <= content.clientHeight) return;
-      
-      stopAutoScroll();
-      
-      // 滚动完一条数据，停顿一段时间再开始
-      if (_offest !== 0 && _offest % itemHeight === 0) {
-        _autoScrollTimer = setTimeout(() => {
-          startAutoScroll();
-        }, 500);
-      } else {
-        _autoScrollReFrame = requestAnimationFrame(() => {
-          content.scrollTop = _offest;
-          startAutoScroll();
-        });
-      }
-      _offest += 1;
-  };
-
-  /**
-   * @method 停止自动滚动
-   */
-  const stopAutoScroll = () => {
-    clearTimeout(_mouseScrollTimer as number);
-    clearTimeout(_autoScrollTimer as number);
-    cancelAnimationFrame(_autoScrollReFrame);
-  };
-
-  /**
-   * @method 鼠标移入事件
-   */
-  const mousemove = () => {
-    _isPause = true;
-    stopAutoScroll();
-  };
-
-  /**
-   * @method 鼠标移出事件
-   */
-  const mouseleave = () => {
-    _isPause = false;
-    _mouseScrollTimer = setTimeout(() => {
-      startAutoScroll();
-    }, 200);
-  };
-
-  /**
-   * @method 是否已经滚动到底部
-   */
-  const checkScrollToBottom = () => {
+  * @method 是否已经滚动到底部
+  */
+  const checkScrollToBottom = async () => {
     const content = containerRef.value as HTMLElement;
 
     // 是否滚动到最底部 +1是为了弥补手动滚无法正确计算
@@ -108,9 +55,12 @@ const useVirtualList = (list: any[], itemHeight: number, option: Option = { swip
       +(content.clientHeight + content.scrollTop).toFixed(0) + 1 >= content.scrollHeight;
 
     if (isToBottom) {
+
+      const { data, hasMore, total } = await scrollToBottom();
+
       if (!_isNextRound) {
         // 第一次触底
-        totalList.value = [...list, ...list.slice(0, _showNumber)];
+        totalList.value = [...list, ...data];
       } else {
         // 第二次触底重置list
         totalList.value = list;
@@ -133,8 +83,8 @@ const useVirtualList = (list: any[], itemHeight: number, option: Option = { swip
   };
 
   /**
-   * @method 计算出屏幕当前展示的数据
-   */
+ * @method 计算出屏幕当前展示的数据
+ */
   const setScreenrenderList = () => {
 
     // 当前滚动到的元素位置
@@ -148,6 +98,69 @@ const useVirtualList = (list: any[], itemHeight: number, option: Option = { swip
 
     // 设置偏移度
     (renderListRef.value as HTMLElement).style.transform = `translateY(${activeIndex * itemHeight}px)`;
+  };
+
+
+  /**
+   *@method 滚动事件
+   */
+  const onScroll = async () => {
+    if (_isPause) {
+      _offest = +(containerRef.value as HTMLElement).scrollTop.toFixed(0);
+    }
+    await checkScrollToBottom();
+    await setScreenrenderList();
+  };
+
+  /**
+   * @method 开启自动滚动
+   */
+  const startAutoScroll = () => {
+    const content = containerRef.value as HTMLElement;
+    const { swiper } = option;
+    if (!swiper || content.scrollHeight <= content.clientHeight) return;
+
+    clearTimoutId();
+
+    // 滚动完一条数据，停顿一段时间再开始
+    if (_offest !== 0 && _offest % itemHeight === 0) {
+      _autoScrollTimer = setTimeout(() => {
+        startAutoScroll();
+      }, 500);
+    } else {
+      _autoScrollReFrame = requestAnimationFrame(() => {
+        content.scrollTop = _offest;
+        startAutoScroll();
+      });
+    }
+    _offest += 1;
+  };
+
+  /**
+   * @method 停止自动滚动
+   */
+  const clearTimoutId = () => {
+    clearTimeout(_mouseScrollTimer as number);
+    clearTimeout(_autoScrollTimer as number);
+    cancelAnimationFrame(_autoScrollReFrame);
+  };
+
+  /**
+   * @method 鼠标移入事件
+   */
+  const mousemove = () => {
+    _isPause = true;
+    clearTimoutId();
+  };
+
+  /**
+   * @method 鼠标移出事件
+   */
+  const mouseleave = () => {
+    _isPause = false;
+    _mouseScrollTimer = setTimeout(() => {
+      startAutoScroll();
+    }, 200);
   };
 
   /**
@@ -165,14 +178,14 @@ const useVirtualList = (list: any[], itemHeight: number, option: Option = { swip
   };
 
   // 组件渲染完成
-  onMounted(() => {
+  onMounted(async () => {
     init();
     startAutoScroll();
   });
 
   // 组件已销毁
   onUnmounted(() => {
-    stopAutoScroll();
+    clearTimoutId();
   })
 
   return {
