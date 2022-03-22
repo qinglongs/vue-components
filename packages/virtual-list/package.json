@@ -10,5 +10,6 @@
   "license": "ISC",
   "dependencies": {
     "use-virtual-list": "^0.0.4"
-  }
+  },
+  "gitHead": "bd7e00f3e4efa1daf4729962d169ca2dea1f5516"
 }
