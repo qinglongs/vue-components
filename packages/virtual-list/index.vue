@@ -9,26 +9,28 @@
     <div ref="placeholderRef" class="container"></div>
     <div ref="renderListRef" class="list">
       <div
-        v-for="(item) in renderList"
+        v-for="item in renderList"
         :key="item"
         class="item"
         :style="`height:${itemHeight}px`"
       >
-        <div v-if="item===0" style="background:pink">
+        <div v-if="item === 0" style="background: pink">
           {{ item }}
         </div>
 
-           <div v-else-if="item===renderList.length-1">
+        <div v-else-if="item === renderList.length - 1">
           {{ item }}
         </div>
-        <div v-else>{{item}}</div>
+        <div v-else>{{ item }}</div>
       </div>
     </div>
   </div>
+
+  <div v-if="loading">请求数据中...</div>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted} from "vue";
+import { defineComponent, onMounted } from "vue";
 
 import useVirtualList from "use-auto-virtual-list";
 
@@ -44,7 +46,6 @@ export default defineComponent({
     },
   },
   setup({ itemHeight, list }) {
-
     onMounted(() => {
       console.log("mouted");
     });

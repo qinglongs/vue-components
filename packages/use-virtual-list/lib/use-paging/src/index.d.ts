@@ -12,9 +12,9 @@ export declare const getaList: ({ page, size }: {
 }) => Promise<unknown>;
 declare function useScrollList<R = any, E = any>(options: Options<E, R>): {
     scrollToBottom: () => Promise<{
-        list: any[];
-        hasMore: boolean;
         total: number;
+        data: any[];
+        hasMore: boolean;
     }>;
 };
 export default useScrollList;

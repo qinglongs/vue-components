@@ -7,7 +7,6 @@ type Option<T, R> = {
   formatResponseData?: (data: R) => any;
 }
 
-
 const useVirtualList = <T, R>(list: any[], itemHeight: number, option: Option<T, R> = { swiper: true }) => {
   // 可视区域容器节点
   const containerRef = ref<HTMLElement>();
@@ -17,20 +16,20 @@ const useVirtualList = <T, R>(list: any[], itemHeight: number, option: Option<T,
   const renderListRef = ref<HTMLElement>();
 
   // 总数据
-  const totalList = ref(list);
+  const totalList = ref<any[]>([]);
 
   // 铺满一屏需要的数据(动态的)
   const renderList = ref<any[]>([]);
 
-  const { scrollToBottom } = useScrollPaging({ isPaging: true, formatResponseData: (data) => data, })
+  const { fetchPagingList,loading } = useScrollPaging({ isPaging: true, formatResponseData: (data) => data, })
 
   // 铺满一屏需要的数据量
   let _showNumber = 0;
 
   // 定时器id相关
-  let _autoScrollTimer: number | null = null;
+  let _autoScrollTimer: NodeJS.Timeout;
   let _autoScrollReFrame = 0;
-  let _mouseScrollTimer: number | null = null;
+  let _mouseTime: NodeJS.Timeout;
 
   // 是否下一轮
   let _isNextRound = false;
@@ -40,9 +39,6 @@ const useVirtualList = <T, R>(list: any[], itemHeight: number, option: Option<T,
 
   // 滚动条偏移度
   let _offest = 0;
-
-
-
 
   /**
   * @method 是否已经滚动到底部
@@ -55,30 +51,32 @@ const useVirtualList = <T, R>(list: any[], itemHeight: number, option: Option<T,
       +(content.clientHeight + content.scrollTop).toFixed(0) + 1 >= content.scrollHeight;
 
     if (isToBottom) {
-
-      const { data, hasMore, total } = await scrollToBottom();
-
-      if (!_isNextRound) {
-        // 第一次触底
-        totalList.value = [...list, ...data];
+      const {hasMore,dataSource} = await fetchPagingList();
+      if (hasMore) {
+        totalList.value = dataSource;
       } else {
-        // 第二次触底重置list
-        totalList.value = list;
+        if (!_isNextRound) {
+          // 第一次触底
+          totalList.value = [...list, ...list.slice(0,_showNumber)];
+        } else {
+          // 第二次触底重置list
+          totalList.value = list;
 
-        // 重新设置偏移度
-        _offest =
-          itemHeight * _showNumber -
-          (containerRef.value as HTMLElement).clientHeight;
+          // 重新设置偏移度
+          _offest =
+            itemHeight * _showNumber -
+            (containerRef.value as HTMLElement).clientHeight;
 
-        // 重新设置容器滚动条高度
-        (containerRef.value as HTMLElement).scrollTop = _offest;
+          // 重新设置容器滚动条高度
+          (containerRef.value as HTMLElement).scrollTop = _offest;
+        }
+        // 是否下一轮
+        _isNextRound = !_isNextRound;
+
+        // 设置容器高度
+        const containerHeight = totalList.value.length * itemHeight + "px";
+        (placeholderRef.value as HTMLElement).style.height = containerHeight;
       }
-      // 是否下一轮
-      _isNextRound = !_isNextRound;
-
-      // 设置容器高度
-      const containerHeight = totalList.value.length * itemHeight + "px";
-      (placeholderRef.value as HTMLElement).style.height = containerHeight;
     }
   };
 
@@ -140,8 +138,8 @@ const useVirtualList = <T, R>(list: any[], itemHeight: number, option: Option<T,
    * @method 停止自动滚动
    */
   const clearTimoutId = () => {
-    clearTimeout(_mouseScrollTimer as number);
-    clearTimeout(_autoScrollTimer as number);
+    clearTimeout(_mouseTime as NodeJS.Timeout);
+    clearTimeout(_autoScrollTimer as NodeJS.Timeout);
     cancelAnimationFrame(_autoScrollReFrame);
   };
 
@@ -158,7 +156,7 @@ const useVirtualList = <T, R>(list: any[], itemHeight: number, option: Option<T,
    */
   const mouseleave = () => {
     _isPause = false;
-    _mouseScrollTimer = setTimeout(() => {
+    _mouseTime = setTimeout(() => {
       startAutoScroll();
     }, 200);
   };
@@ -166,7 +164,11 @@ const useVirtualList = <T, R>(list: any[], itemHeight: number, option: Option<T,
   /**
    * @method 初始化
    */
-  const init = () => {
+  const init = async () => {
+
+    const { dataSource } = await fetchPagingList(true);
+ 
+    totalList.value = dataSource;
     // 设置占位容器的高度，即渲染真实的列表的高度
     (placeholderRef.value as HTMLElement).style.height = itemHeight * totalList.value.length + "px";
 
@@ -175,11 +177,13 @@ const useVirtualList = <T, R>(list: any[], itemHeight: number, option: Option<T,
 
     // 设置可视区域的展示数据
     renderList.value = totalList.value.slice(0, _showNumber);
+
+
   };
 
   // 组件渲染完成
   onMounted(async () => {
-    init();
+    await init();
     startAutoScroll();
   });
 
@@ -189,6 +193,7 @@ const useVirtualList = <T, R>(list: any[], itemHeight: number, option: Option<T,
   })
 
   return {
+    loading,
     renderListRef,
     renderList,
     containerRef,

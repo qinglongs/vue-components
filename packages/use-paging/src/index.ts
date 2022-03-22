@@ -20,35 +20,40 @@ export const getaList = ({ page, size }: { page: number, size: number }) => {
 }
 
 function useScrollList<R = any, E = any>(options: Options<E, R>) {
-  const { formatResponseData, extraParams, isPaging } = options;
 
-  const dataSource = ref<any[]>([]);
+
+  const { formatResponseData, extraParams, isPaging } = options;
 
   const pagingParams = reactive({
     page: 1,
     size: 10
   });
 
+  let dataSource: any[] = [];
+  const loading = ref(false);
+
   /**
 * @method 请求分页数据
 */
-  const fetchPagingList = async () => {
-
+  const fetchPagingList = async (init = false) => {
+    if (loading.value) return Promise.reject();
+    console.log(pagingParams.page, pagingParams.size);
+    if (!init) {
+      pagingParams.page++;
+    }
+    loading.value = true;
     const tmp = await getaList({ page: pagingParams.page, size: pagingParams.size, ...extraParams });
-    pagingParams.page++;
+
     const { total, data } = formatResponseData(tmp as R);
-
+    // 还有更多
     const hasMore = pagingParams.page * pagingParams.size < total;
-
-
-    return { total, data, hasMore }
+    // 更新数据
+    Array.prototype.push.apply(dataSource, data);
+    loading.value = false;
+    return { hasMore, dataSource }
   };
 
-  const scrollToBottom = async () => {
-    return fetchPagingList();
-  }
-
-  return { scrollToBottom }
+  return { fetchPagingList,loading }
 }
 
 export default useScrollList;

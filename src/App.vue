@@ -11,15 +11,9 @@ import VirtualList from "packages/virtual-list/index.vue";
 </template>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
 .box {
-  height: 400px;
+  height: 60vh;
+  width: 800px;
+  margin: 0 auto;
 }
 </style>
