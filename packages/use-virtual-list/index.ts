@@ -83,7 +83,6 @@ const useVirtualList = (list: any[], itemHeight: number, option: Option = { swip
    * @method 鼠标移入事件
    */
   const mousemove = () => {
-    
     _isPause = true;
     stopAutoScroll();
   };
