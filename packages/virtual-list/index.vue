@@ -46,6 +46,7 @@ export default defineComponent({
   setup({ itemHeight, list }) {
 
     onMounted(() => {
+      
       console.log("mouted");
     });
 
