@@ -3,6 +3,7 @@
   "version": "0.0.8",
   "description": "vue3虚拟滚动列表组件",
   "main": "src/index.js",
+  "keywords": ["虚拟滚动列表","vue3虚拟滚动","无缝轮播","大数据渲染"],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
