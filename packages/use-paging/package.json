@@ -1,7 +1,7 @@
 {
   "name": "use-scroll-paging",
   "version": "0.0.2",
-  "description": "vue分页请求hooks",
+  "description": "vue3分页请求hooks",
   "main": "src/index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
