@@ -1,6 +1,6 @@
 {
   "name": "auto-virtual-list",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "vue3虚拟滚动列表组件",
   "main": "index.vue",
   "keywords": [
@@ -15,7 +15,7 @@
   "author": "lqllm",
   "license": "ISC",
   "dependencies": {
-    "use-auto-virtual-list": "^0.0.8"
+    "use-auto-virtual-list": "^0.0.9"
   },
   "repository": "https://github.com/qinglongs/vue-components",
   "gitHead": "e4da71bdb511b66f54858bffbf9b076c99ef3a0e"
