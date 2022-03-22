@@ -1,6 +1,6 @@
 {
   "name": "virtual-list",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "虚拟滚动列表组件",
   "main": "src/index.js",
   "scripts": {
@@ -9,7 +9,7 @@
   "author": "lqllm",
   "license": "ISC",
   "dependencies": {
-    "use-virtual-list": "^0.0.4"
+    "use-virtual-list": "^0.0.5"
   },
   "gitHead": "bd7e00f3e4efa1daf4729962d169ca2dea1f5516"
 }
