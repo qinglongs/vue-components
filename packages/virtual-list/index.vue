@@ -30,7 +30,7 @@
 <script lang="ts">
 import { defineComponent, onMounted} from "vue";
 
-import useVirtualList from "../use-virtual-list/index";
+import useVirtualList from "use-virtual-list";
 
 export default defineComponent({
   props: {
