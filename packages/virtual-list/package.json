@@ -1,6 +1,6 @@
 {
   "name": "auto-virtual-list",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "description": "vue3虚拟滚动列表组件",
   "main": "index.vue",
   "keywords": [
