@@ -15,7 +15,6 @@ const useVirtualList = <T, R>(getList: GetList, itemHeight: number, option: Opti
   // 数据渲染节点
   const renderListRef = ref<HTMLElement>();
 
-
   // 铺满一屏需要的数据(动态的)
   const renderList = ref<any[]>([]);
 
@@ -28,8 +27,6 @@ const useVirtualList = <T, R>(getList: GetList, itemHeight: number, option: Opti
   let _autoScrollTimer: number;
   let _autoScrollReFrame = 0;
   let _mouseTime: number;
-
-
 
   // 是否下一轮
   let _isNextRound = false;
@@ -97,7 +94,6 @@ const useVirtualList = <T, R>(getList: GetList, itemHeight: number, option: Opti
     // 设置偏移度
     (renderListRef.value as HTMLElement).style.transform = `translateY(${activeIndex * itemHeight}px)`;
   };
-
 
   /**
    *@method 滚动事件
