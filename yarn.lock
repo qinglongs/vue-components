@@ -5077,17 +5077,17 @@ uri-js@^4.2.2:
   dependencies:
     punycode "^2.1.0"
 
-use-auto-virtual-list@^0.0.14:
-  version "0.0.14"
-  resolved "https://registry.yarnpkg.com/use-auto-virtual-list/-/use-auto-virtual-list-0.0.14.tgz#df3e9f095fdc18990c39ffc856704386f1344365"
-  integrity sha512-Xm8SKOHPmUIDnHsdiIA9ge4gytc8dg/1Ow+OeB9Ipkdndslaq9tVsF8R6zBZH5/WkRl+kWkrihlUT3bBKGUP0g==
+use-auto-virtual-list@^0.0.15:
+  version "0.0.15"
+  resolved "https://registry.yarnpkg.com/use-auto-virtual-list/-/use-auto-virtual-list-0.0.15.tgz#965b8b83dd6600cc64516cad72f07a33f4fe356d"
+  integrity sha512-jLRhzTN7L7M3lABRm1cTaKJdrBDIWyrlGOuts8bYIUI+FJpmgJ0NJNNRzNN7YqPve6cWckqin40wUgbupMxjfQ==
   dependencies:
-    use-scroll-paging "^0.0.5"
+    use-scroll-paging "^0.0.6"
 
-use-scroll-paging@^0.0.5:
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/use-scroll-paging/-/use-scroll-paging-0.0.5.tgz#4a4d2b1baca890f063078c138ce4c16667622356"
-  integrity sha512-NRvOJNzBmtAOLISmO+TGK6wJo6y+BdDJoMVK2F0qPHGLwklVOgZY+/tr0+Rs36bIaYFoxlXMv6nZgTLrhWrHiA==
+use-scroll-paging@^0.0.6:
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/use-scroll-paging/-/use-scroll-paging-0.0.6.tgz#b15040045402d1698d86655bb02d67afd959fee8"
+  integrity sha512-TauiAtdh06PwuHVCkfQdVuevmSBqMffxSpfW7IhVSSj3UWwjt57lYWKGFfrweM/hbqUCy/lGfnH33nUHeqEoww==
 
 util-deprecate@^1.0.1, util-deprecate@~1.0.1:
   version "1.0.2"
