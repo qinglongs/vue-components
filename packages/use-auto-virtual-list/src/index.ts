@@ -131,7 +131,7 @@ const useVirtualList = <T, R>(getList: GetList, itemHeight: number, option: Opti
   };
 
   /**
-   * @method 停止自动滚动
+   * @method 清除定时器，关闭自动轮播
    */
   const clearTimoutId = () => {
     clearTimeout(_mouseTime as number);

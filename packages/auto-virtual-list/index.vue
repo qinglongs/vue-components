@@ -26,25 +26,31 @@
     </div>
   </div>
 
-  <div class="status-box">
-    <div>
-      <span>当前页数：{{ pagingParams.page }}</span>
-      <span>展示条数：{{ pagingParams.size }}</span>
+  <ul class="status-box">
+    <li>
+      <span
+        >当前页数：{{ pagingParams.page }} 展示条数：{{
+          pagingParams.size
+        }}</span
+      >
+    </li>
+
+    <li>
       <span>数据总数：{{ totalList.length }}/{{ total }}</span>
-    </div>
+    </li>
 
-    <div>请求状态: {{ loading ? "请求中..." : "请求完成" }}</div>
+    <li>请求状态: {{ loading ? "请求中..." : "请求完成" }}</li>
 
-    <div>
+    <li>
       <span> 是否还有更多:{{ hasMore ? "还有更多" : "没有更多" }}</span>
-    </div>
-    <div>
+    </li>
+    <li>
       <span>渲染数据：{{ renderList }}</span>
-    </div>
-    <div>
+    </li>
+    <li>
       <span>已加载数据：{{ totalList }}</span>
-    </div>
-  </div>
+    </li>
+  </ul>
 </template>
 
 <script setup lang="ts">
@@ -75,7 +81,6 @@ const {
   containerRef,
   renderListRef,
 } = useVirtualList(getList as any, itemHeight);
-
 </script>
 
 <style lang="scss" scoped>
@@ -109,6 +114,10 @@ const {
   height: 400px;
   right: 30px;
   top: 30px;
+}
+
+li {
+  margin-bottom: 20px;
 }
 
 // .virtual-list::-webkit-scrollbar {
