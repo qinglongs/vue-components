@@ -18,7 +18,7 @@ const useVirtualList = <T, R>(getList: GetList, itemHeight: number, option: Opti
   // 铺满一屏需要的数据(动态的)
   const renderList = ref<any[]>([]);
 
-  const { fetchPagingList, loading, hasMore, total, dataSource: totalList,pagingParams } = useScrollPaging(getList,{ isPaging: true, formatResponseData: (data) => data, })
+  const { fetchPagingList, loading, hasMore, total, dataSource: totalList, pagingParams } = useScrollPaging(getList, { isPaging: true, formatResponseData: (data) => data, })
 
   // 铺满一屏需要的数据量
   let _showNumber = 0;
@@ -161,10 +161,9 @@ const useVirtualList = <T, R>(getList: GetList, itemHeight: number, option: Opti
    * @method 初始化
    */
   const init = async () => {
+    
+    await fetchPagingList(true);
 
-    const { dataSource } = await fetchPagingList(true);
-
-    totalList.value = dataSource;
     // 设置占位容器的高度，即渲染真实的列表的高度
     (placeholderRef.value as HTMLElement).style.height = itemHeight * totalList.value.length + "px";
 

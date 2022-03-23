@@ -47,39 +47,35 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, onMounted } from "vue";
-
+<script setup lang="ts">
 import useVirtualList from "use-auto-virtual-list";
 
-const arr = new Array(100).fill(0).map((_, index) => index);
-
-export const getaList = ({ page, size }: { page: number; size: number }) => {
-  const list = arr.slice(page * size - size, page * size);
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({ data: list, total: arr.length });
-    }, 1000);
-  });
-};
-
-export default defineComponent({
-  props: {
-    itemHeight: {
-      type: Number,
-      default: 150,
-    },
-    list: {
-      type: Array,
-      default: () => new Array(10).fill(1).map((item, index) => index),
-    },
+const { itemHeight, getList } = defineProps({
+  itemHeight: {
+    type: Number,
+    default: 150,
   },
-  setup({ itemHeight }) {
-    const virtualListProps = useVirtualList(getaList, itemHeight);
-
-    return virtualListProps;
+  getList: {
+    type: Function,
+    default: () => {},
   },
 });
+
+const {
+  pagingParams,
+  total,
+  totalList,
+  loading,
+  hasMore,
+  renderList,
+  mouseleave,
+  mousemove,
+  onScroll,
+  placeholderRef,
+  containerRef,
+  renderListRef,
+} = useVirtualList(getList as any, itemHeight);
+
 </script>
 
 <style lang="scss" scoped>

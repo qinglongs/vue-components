@@ -5077,10 +5077,10 @@ uri-js@^4.2.2:
   dependencies:
     punycode "^2.1.0"
 
-use-auto-virtual-list@^0.0.15:
-  version "0.0.15"
-  resolved "https://registry.yarnpkg.com/use-auto-virtual-list/-/use-auto-virtual-list-0.0.15.tgz#965b8b83dd6600cc64516cad72f07a33f4fe356d"
-  integrity sha512-jLRhzTN7L7M3lABRm1cTaKJdrBDIWyrlGOuts8bYIUI+FJpmgJ0NJNNRzNN7YqPve6cWckqin40wUgbupMxjfQ==
+use-auto-virtual-list@^0.0.16:
+  version "0.0.16"
+  resolved "https://registry.yarnpkg.com/use-auto-virtual-list/-/use-auto-virtual-list-0.0.16.tgz#96e40551e94c0d897aecefc5a9be9d2aa3430766"
+  integrity sha512-5N/tnYOALVGtRJcmHYshvHjBOglEIonLko+OlnFn12HMn5HzdIK9ie9cR9+vbWu2M5rt9yjX90uQATG0S+SiMQ==
   dependencies:
     use-scroll-paging "^0.0.6"
 
