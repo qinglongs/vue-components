@@ -12,7 +12,7 @@
     "@rollup/plugin-typescript": "^8.3.1",
     "rollup-plugin-typescript2": "^0.31.2",
     "sass": "^1.49.9",
-    "use-auto-virtual-list": "^0.0.17",
+    "use-auto-virtual-list": "^0.0.18",
     "vue": "^3.2.25"
   },
   "devDependencies": {
