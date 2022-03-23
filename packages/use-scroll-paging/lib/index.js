@@ -1,35 +1,47 @@
-import { ref, reactive } from 'vue';
+import { reactive, ref } from 'vue';
 
-const arr = new Array(1000).fill(0).map((_, index) => index);
-const getaList = ({ page, size }) => {
-    const list = arr.slice(page * size - size, page * size);
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve({ data: list, total: arr.length });
-        }, 2000);
-    });
-};
-function useScrollList(options) {
+function useScrollList(getList, options) {
     const { formatResponseData, extraParams, isPaging } = options;
-    ref([]);
     const pagingParams = reactive({
         page: 1,
         size: 10
     });
+    // 数据源，包含完整数据
+    const dataSource = ref([]);
+    // 还有更多
+    const hasMore = ref(true);
+    // 节流标志
+    const loading = ref(false);
+    // total
+    const totalNumber = ref(0);
     /**
-  * @method 请求分页数据
-  */
-    const fetchPagingList = async () => {
-        const tmp = await getaList({ page: pagingParams.page, size: pagingParams.size, ...extraParams });
-        pagingParams.page++;
+    * @method 请求分页数据
+    * @param init 是否初始化，初始化时不做分页参数不+1
+    */
+    const fetchPagingList = async (init = false) => {
+        // 没有更多
+        if (!hasMore.value) {
+            return { hasMore: hasMore.value, dataSource: dataSource.value };
+        }
+        // 节流
+        if (loading.value)
+            return Promise.reject();
+        if (!init) {
+            pagingParams.page++;
+        }
+        loading.value = true;
+        const tmp = await getList({ page: pagingParams.page, size: pagingParams.size, ...extraParams });
         const { total, data } = formatResponseData(tmp);
-        const hasMore = pagingParams.page * pagingParams.size < total;
-        return { total, data, hasMore };
+        // 还有更多
+        hasMore.value = pagingParams.page * pagingParams.size < total;
+        // 数据总数
+        totalNumber.value = total;
+        // 更新数据
+        Array.prototype.push.apply(dataSource.value, data);
+        loading.value = false;
+        return { hasMore: hasMore.value, dataSource: dataSource.value };
     };
-    const scrollToBottom = async () => {
-        return fetchPagingList();
-    };
-    return { scrollToBottom };
+    return { fetchPagingList, loading, hasMore, total: totalNumber, dataSource: dataSource, pagingParams };
 }
 
-export { useScrollList as default, getaList };
+export { useScrollList as default };

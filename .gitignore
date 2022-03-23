@@ -11,6 +11,8 @@ node_modules
 dist
 dist-ssr
 *.local
+packages/**/tsconfig.json
+packages/**/rollup.config.ts
 
 # Editor directories and files
 .vscode/*

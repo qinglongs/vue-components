@@ -5,7 +5,7 @@
   "main": "src/index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "rollup --config rollup.config.ts"
+    "build": "rollup --config ../../rollup.config.ts"
   },
   "author": "lqllm",
   "license": "ISC",
@@ -13,5 +13,9 @@
   "gitHead": "e4da71bdb511b66f54858bffbf9b076c99ef3a0e",
   "dependencies": {
     "use-scroll-paging": "^0.0.5"
-  }
+  },
+  "files": [
+    "src",
+    "lib"
+  ]
 }
