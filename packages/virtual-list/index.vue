@@ -26,13 +26,42 @@
     </div>
   </div>
 
-  <div v-if="loading">请求数据中...</div>
+  <div class="status-box">
+    <div>
+      <span>当前页数：{{ pagingParams.page }}</span>
+      <span>展示条数：{{ pagingParams.size }}</span>
+      <span>数据总数：{{ totalList.length }}/{{ total }}</span>
+    </div>
+
+    <div>请求状态: {{ loading ? "请求中..." : "请求完成" }}</div>
+
+    <div>
+      <span> 是否还有更多:{{ hasMore ? "还有更多" : "没有更多" }}</span>
+    </div>
+    <div>
+      <span>渲染数据：{{ renderList }}</span>
+    </div>
+    <div>
+      <span>已加载数据：{{ totalList }}</span>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, onMounted } from "vue";
 
 import useVirtualList from "use-auto-virtual-list";
+
+const arr = new Array(100).fill(0).map((_, index) => index);
+
+export const getaList = ({ page, size }: { page: number; size: number }) => {
+  const list = arr.slice(page * size - size, page * size);
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({ data: list, total: arr.length });
+    }, 1000);
+  });
+};
 
 export default defineComponent({
   props: {
@@ -45,12 +74,8 @@ export default defineComponent({
       default: () => new Array(10).fill(1).map((item, index) => index),
     },
   },
-  setup({ itemHeight, list }) {
-    onMounted(() => {
-      console.log("mouted");
-    });
-
-    const virtualListProps = useVirtualList(list, itemHeight);
+  setup({ itemHeight }) {
+    const virtualListProps = useVirtualList(getaList, itemHeight);
 
     return virtualListProps;
   },
@@ -80,6 +105,14 @@ export default defineComponent({
       height: 150px;
     }
   }
+}
+
+.status-box {
+  position: fixed;
+  width: 500px;
+  height: 400px;
+  right: 30px;
+  top: 30px;
 }
 
 // .virtual-list::-webkit-scrollbar {

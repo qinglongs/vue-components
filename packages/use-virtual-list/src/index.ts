@@ -1,5 +1,5 @@
 import { ref, onMounted, onUnmounted, reactive } from 'vue';
-import useScrollPaging from 'use-scroll-paging';
+import useScrollPaging, { GetList } from 'use-scroll-paging';
 
 type Option<T, R> = {
   swiper: boolean,
@@ -7,7 +7,7 @@ type Option<T, R> = {
   formatResponseData?: (data: R) => any;
 }
 
-const useVirtualList = <T, R>(list: any[], itemHeight: number, option: Option<T, R> = { swiper: true }) => {
+const useVirtualList = <T, R>(getList: GetList, itemHeight: number, option: Option<T, R> = { swiper: true }) => {
   // 可视区域容器节点
   const containerRef = ref<HTMLElement>();
   // 内容节点
@@ -15,21 +15,21 @@ const useVirtualList = <T, R>(list: any[], itemHeight: number, option: Option<T,
   // 数据渲染节点
   const renderListRef = ref<HTMLElement>();
 
-  // 总数据
-  const totalList = ref<any[]>([]);
 
   // 铺满一屏需要的数据(动态的)
   const renderList = ref<any[]>([]);
 
-  const { fetchPagingList,loading } = useScrollPaging({ isPaging: true, formatResponseData: (data) => data, })
+  const { fetchPagingList, loading, hasMore, total, dataSource: totalList,pagingParams } = useScrollPaging(getList,{ isPaging: true, formatResponseData: (data) => data, })
 
   // 铺满一屏需要的数据量
   let _showNumber = 0;
 
   // 定时器id相关
-  let _autoScrollTimer: NodeJS.Timeout;
+  let _autoScrollTimer: number;
   let _autoScrollReFrame = 0;
-  let _mouseTime: NodeJS.Timeout;
+  let _mouseTime: number;
+
+
 
   // 是否下一轮
   let _isNextRound = false;
@@ -51,21 +51,19 @@ const useVirtualList = <T, R>(list: any[], itemHeight: number, option: Option<T,
       +(content.clientHeight + content.scrollTop).toFixed(0) + 1 >= content.scrollHeight;
 
     if (isToBottom) {
-      const {hasMore,dataSource} = await fetchPagingList();
-      if (hasMore) {
-        totalList.value = dataSource;
-      } else {
+
+      const { hasMore } = await fetchPagingList();
+
+      if (!hasMore) {
         if (!_isNextRound) {
           // 第一次触底
-          totalList.value = [...list, ...list.slice(0,_showNumber)];
+          totalList.value = [...totalList.value, ...totalList.value.slice(0, _showNumber)];
         } else {
           // 第二次触底重置list
-          totalList.value = list;
+          totalList.value = totalList.value.slice(0, total.value);
 
           // 重新设置偏移度
-          _offest =
-            itemHeight * _showNumber -
-            (containerRef.value as HTMLElement).clientHeight;
+          _offest = itemHeight * _showNumber - (containerRef.value as HTMLElement).clientHeight;
 
           // 重新设置容器滚动条高度
           (containerRef.value as HTMLElement).scrollTop = _offest;
@@ -73,10 +71,12 @@ const useVirtualList = <T, R>(list: any[], itemHeight: number, option: Option<T,
         // 是否下一轮
         _isNextRound = !_isNextRound;
 
-        // 设置容器高度
-        const containerHeight = totalList.value.length * itemHeight + "px";
-        (placeholderRef.value as HTMLElement).style.height = containerHeight;
+
       }
+      // 设置容器高度
+      const placeholderHeight = totalList.value.length * itemHeight + "px";
+
+      (placeholderRef.value as HTMLElement).style.height = placeholderHeight;
     }
   };
 
@@ -138,8 +138,8 @@ const useVirtualList = <T, R>(list: any[], itemHeight: number, option: Option<T,
    * @method 停止自动滚动
    */
   const clearTimoutId = () => {
-    clearTimeout(_mouseTime as NodeJS.Timeout);
-    clearTimeout(_autoScrollTimer as NodeJS.Timeout);
+    clearTimeout(_mouseTime as number);
+    clearTimeout(_autoScrollTimer as number);
     cancelAnimationFrame(_autoScrollReFrame);
   };
 
@@ -167,7 +167,7 @@ const useVirtualList = <T, R>(list: any[], itemHeight: number, option: Option<T,
   const init = async () => {
 
     const { dataSource } = await fetchPagingList(true);
- 
+
     totalList.value = dataSource;
     // 设置占位容器的高度，即渲染真实的列表的高度
     (placeholderRef.value as HTMLElement).style.height = itemHeight * totalList.value.length + "px";
@@ -177,8 +177,6 @@ const useVirtualList = <T, R>(list: any[], itemHeight: number, option: Option<T,
 
     // 设置可视区域的展示数据
     renderList.value = totalList.value.slice(0, _showNumber);
-
-
   };
 
   // 组件渲染完成
@@ -193,6 +191,10 @@ const useVirtualList = <T, R>(list: any[], itemHeight: number, option: Option<T,
   })
 
   return {
+    total,
+    pagingParams,
+    totalList,
+    hasMore,
     loading,
     renderListRef,
     renderList,

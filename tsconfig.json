@@ -11,6 +11,10 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "baseUrl": "./",
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "types": ["node"],
     "lib": [
       "esnext",
       "dom"
