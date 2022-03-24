@@ -42,7 +42,7 @@
     <li>请求状态: {{ loading ? "请求中..." : "请求完成" }}</li>
 
     <li>
-      <span> 是否还有更多:{{ hasMore ? "还有更多" : "没有更多" }}</span>
+      <span> 还有更多:{{ hasMore ? "还有更多" : "没有更多" }}</span>
     </li>
     <li>
       <span>渲染数据：{{ renderList }}</span>
@@ -74,13 +74,14 @@ const {
   loading,
   hasMore,
   renderList,
-  mouseleave,
-  mousemove,
-  onScroll,
   placeholderRef,
   containerRef,
   renderListRef,
+  mouseleave,
+  mousemove,
+  onScroll,
 } = useVirtualList(getList as any, itemHeight);
+
 </script>
 
 <style lang="scss" scoped>
