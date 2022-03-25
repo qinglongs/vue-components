@@ -39,7 +39,7 @@
       <span>数据总数：{{ totalList.length }}/{{ total }}</span>
     </li>
 
-    <li>请求状态: {{ loading ? "请求中..." : "请求完成" }}</li>
+    <li :style="{color:loading?'red':''}">请求状态: {{ loading ? "请求中..." : "请求完成" }}</li>
 
     <li>
       <span> 还有更多:{{ hasMore ? "还有更多" : "没有更多" }}</span>
@@ -110,9 +110,9 @@ const {
 }
 
 .status-box {
+  font-size: 30px;
   position: fixed;
-  width: 500px;
-  height: 400px;
+  width: 850px;
   right: 30px;
   top: 30px;
 }

@@ -21,7 +21,7 @@ const useVirtualList = <T, R>(getList: GetList, itemHeight: number, option: Opti
   const { fetchPagingList, loading, hasMore, total, dataSource: totalList, pagingParams } = useScrollPaging(getList, { isPaging: true, formatResponseData: (data) => data, })
 
   // 铺满一屏需要的数据量
-  let _showNumber = 0;
+  let _renderNumber = 0;
 
   // 定时器id相关
   let _autoScrollTimer: number;
@@ -54,13 +54,13 @@ const useVirtualList = <T, R>(getList: GetList, itemHeight: number, option: Opti
       if (!hasMore) {
         if (!_isNextRound) {
           // 第一次触底
-          totalList.value = [...totalList.value, ...totalList.value.slice(0, _showNumber)];
+          totalList.value = [...totalList.value, ...totalList.value.slice(0, _renderNumber)];
         } else {
           // 第二次触底重置list
           totalList.value = totalList.value.slice(0, total.value);
 
-          // 重新设置偏移度
-          _offest = itemHeight * _showNumber - (containerRef.value as HTMLElement).clientHeight;
+          // 重新设置偏移度 无缝滚动的核心计算  超出视窗的元素出现，滚动条才会发生变化
+          _offest = itemHeight * _renderNumber - (containerRef.value as HTMLElement).clientHeight;
 
           // 重新设置容器滚动条高度
           (containerRef.value as HTMLElement).scrollTop = _offest;
@@ -88,7 +88,7 @@ const useVirtualList = <T, R>(getList: GetList, itemHeight: number, option: Opti
     // 切割数据
     renderList.value = totalList.value.slice(
       activeIndex,
-      activeIndex + _showNumber
+      activeIndex + _renderNumber
     );
 
     // 设置偏移度
@@ -168,10 +168,10 @@ const useVirtualList = <T, R>(getList: GetList, itemHeight: number, option: Opti
     (placeholderRef.value as HTMLElement).style.height = itemHeight * totalList.value.length + "px";
 
     // 设置可视区域的展示条数
-    _showNumber = (((containerRef.value as HTMLElement).clientHeight / itemHeight) >> 0) + 2;
+    _renderNumber = (((containerRef.value as HTMLElement).clientHeight / itemHeight) >> 0) + 2;
 
     // 设置可视区域的展示数据
-    renderList.value = totalList.value.slice(0, _showNumber);
+    renderList.value = totalList.value.slice(0, _renderNumber);
   };
 
   // 组件渲染完成

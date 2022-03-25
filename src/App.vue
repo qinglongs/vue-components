@@ -5,7 +5,7 @@
 import VirtualList from "packages/auto-virtual-list/index.vue";
 
 
-const arr = new Array(100).fill(0).map((_, index) => index);
+const arr = new Array(20).fill(0).map((_, index) => index);
 const getaList = ({ page, size }: { page: number; size: number }) => {
   const list = arr.slice(page * size - size, page * size);
   return new Promise((resolve) => {
@@ -27,6 +27,6 @@ const getaList = ({ page, size }: { page: number; size: number }) => {
 .box {
   height: 60vh;
   width: 800px;
-  margin: 0 auto;
+  margin-left: 10%;
 }
 </style>
