@@ -1,6 +1,6 @@
 {
   "name": "use-auto-virtual-list",
-  "version": "0.0.19",
+  "version": "0.0.20",
   "description": "vue3虚拟滚动(带自动轮播分页)列表hooks",
   "main": "src/index.ts",
   "scripts": {
