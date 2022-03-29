@@ -2,8 +2,10 @@ import { ref, onMounted, onUnmounted, reactive } from 'vue';
 import useScrollPaging, { GetList } from 'use-scroll-paging';
 
 type Option<T, R> = {
-  swiper: boolean,
+  isPaging?: boolean;
+  swiper?: boolean;
   extraParams?: T;
+  showNumber?:number;
   formatResponseData?: (data: R) => any;
 }
 
@@ -18,7 +20,7 @@ const useVirtualList = <T, R>(getList: GetList, itemHeight: number, option: Opti
   // 铺满一屏需要的数据(动态的)
   const renderList = ref<any[]>([]);
 
-  const { fetchPagingList, dataSource: totalList,total } = useScrollPaging(getList, { isPaging: true, formatResponseData: (data) => data, })
+  const { fetchPagingList, dataSource: totalList, total } = useScrollPaging(getList, { isPaging: true, formatResponseData: (data) => data, })
 
   // 铺满一屏需要的数据量
   let _renderNumber = 0;
@@ -42,26 +44,23 @@ const useVirtualList = <T, R>(getList: GetList, itemHeight: number, option: Opti
   */
   const checkScrollToBottom = async () => {
 
-    const content = containerRef.value as HTMLElement;
+    const container = containerRef.value as HTMLElement;
 
     // 是否滚动到最底部 +1是为了弥补手动滚无法正确计算
     const isToBottom =
-      +(content.clientHeight + content.scrollTop).toFixed(0) + 1 >= content.scrollHeight;
+      +(container.clientHeight + container.scrollTop).toFixed(0) + 1 >= container.scrollHeight;
 
     if (isToBottom) {
-
       // 请求分页接口
-      const { hasMore } = await fetchPagingList();
-
+      const { hasMore } = option.isPaging ? await fetchPagingList() : { hasMore: false };
 
       // 分页数据加载完成
       if (!hasMore) {
-
         if (!_isNextRound) {
           // 第一次触底
           totalList.value = totalList.value.concat(totalList.value.slice(0, _renderNumber));
         } else {
-          
+
           // 第二次触底重置list
           totalList.value = totalList.value.slice(0, total.value);
 
@@ -73,10 +72,7 @@ const useVirtualList = <T, R>(getList: GetList, itemHeight: number, option: Opti
         }
         // 是否下一轮
         _isNextRound = !_isNextRound;
-
-
       }
-
 
       // 设置容器高度
       const placeholderHeight = totalList.value.length * itemHeight + "px";
@@ -99,8 +95,8 @@ const useVirtualList = <T, R>(getList: GetList, itemHeight: number, option: Opti
       activeIndex + _renderNumber
     );
 
-    // 设置偏移度
-    (renderListRef.value as HTMLElement).style.transform = `translateY(${activeIndex * itemHeight}px)`;
+    // 设置偏移度 开启gpu硬件加速
+    (renderListRef.value as HTMLElement).style.transform = `translate3d(0,${activeIndex * itemHeight}px,0)`;
   };
 
   /**
@@ -110,9 +106,7 @@ const useVirtualList = <T, R>(getList: GetList, itemHeight: number, option: Opti
     if (_isPause) {
       _offest = +(containerRef.value as HTMLElement).scrollTop.toFixed(0);
     }
-
     await checkScrollToBottom();
-
     await setScreenrenderList();
   };
 
@@ -131,7 +125,7 @@ const useVirtualList = <T, R>(getList: GetList, itemHeight: number, option: Opti
     if (_offest !== 0 && _offest % itemHeight === 0) {
       _autoScrollTimer = setTimeout(() => {
         startAutoScroll();
-      },1000);
+      }, 1000);
     } else {
       _autoScrollReFrame = requestAnimationFrame(() => {
         content.scrollTop = _offest;
@@ -172,7 +166,7 @@ const useVirtualList = <T, R>(getList: GetList, itemHeight: number, option: Opti
    * @method 初始化
    */
   const init = async () => {
-    
+
     await fetchPagingList(true);
 
     // 设置占位容器的高度，即渲染真实的列表的高度

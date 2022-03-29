@@ -21,12 +21,22 @@
 <script setup lang="ts">
 import useVirtualList from "use-auto-virtual-list";
 
-type Props = { itemHeight: number; getList: (params: any) => Promise<any> };
+type Props = {
+  itemHeight: number;
+  isPaging: boolean;
+  swiper: boolean;
+  getList: (params: any) => Promise<any>;
+};
 
-const { itemHeight, getList } = withDefaults(defineProps<Props>(), {
-  itemHeigh: 0,
-  getList: () => Promise.resolve(),
-});
+const { itemHeight, getList, isPaging, swiper } = withDefaults(
+  defineProps<Props>(),
+  {
+    itemHeigh: 0,
+    isPaging: true,
+    swiper: true,
+    getList: () => Promise.resolve(),
+  }
+);
 
 const {
   renderList,
@@ -36,9 +46,11 @@ const {
   mouseleave,
   mousemove,
   onScroll,
-} = useVirtualList(getList as any, itemHeight);
-
-
+} = useVirtualList(getList as any, itemHeight, {
+  swiper,
+  isPaging,
+  showNumber: 10,
+});
 </script>
 
 <style lang="scss" scoped>
