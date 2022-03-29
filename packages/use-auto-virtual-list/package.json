@@ -1,6 +1,6 @@
 {
   "name": "use-auto-virtual-list",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "description": "vue3虚拟滚动(带自动轮播分页)列表hooks",
   "main": "src/index.ts",
   "scripts": {
@@ -12,7 +12,7 @@
   "repository": "https://github.com/qinglongs/vue-components",
   "gitHead": "e4da71bdb511b66f54858bffbf9b076c99ef3a0e",
   "dependencies": {
-    "use-scroll-paging": "^0.0.8"
+    "use-scroll-paging": "^0.0.9"
   },
   "files": [
     "src",
