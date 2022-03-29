@@ -18,7 +18,7 @@ const useVirtualList = <T, R>(getList: GetList, itemHeight: number, option: Opti
   // 铺满一屏需要的数据(动态的)
   const renderList = ref<any[]>([]);
 
-  const { fetchPagingList, loading, hasMore, total, dataSource: totalList, pagingParams } = useScrollPaging(getList, { isPaging: true, formatResponseData: (data) => data, })
+  const { fetchPagingList, dataSource: totalList,total } = useScrollPaging(getList, { isPaging: true, formatResponseData: (data) => data, })
 
   // 铺满一屏需要的数据量
   let _renderNumber = 0;
@@ -41,6 +41,7 @@ const useVirtualList = <T, R>(getList: GetList, itemHeight: number, option: Opti
   * @method 是否已经滚动到底部
   */
   const checkScrollToBottom = async () => {
+
     const content = containerRef.value as HTMLElement;
 
     // 是否滚动到最底部 +1是为了弥补手动滚无法正确计算
@@ -49,13 +50,18 @@ const useVirtualList = <T, R>(getList: GetList, itemHeight: number, option: Opti
 
     if (isToBottom) {
 
+      // 请求分页接口
       const { hasMore } = await fetchPagingList();
 
+
+      // 分页数据加载完成
       if (!hasMore) {
+
         if (!_isNextRound) {
           // 第一次触底
-          totalList.value = [...totalList.value, ...totalList.value.slice(0, _renderNumber)];
+          totalList.value = totalList.value.concat(totalList.value.slice(0, _renderNumber));
         } else {
+          
           // 第二次触底重置list
           totalList.value = totalList.value.slice(0, total.value);
 
@@ -70,6 +76,8 @@ const useVirtualList = <T, R>(getList: GetList, itemHeight: number, option: Opti
 
 
       }
+
+
       // 设置容器高度
       const placeholderHeight = totalList.value.length * itemHeight + "px";
 
@@ -102,7 +110,9 @@ const useVirtualList = <T, R>(getList: GetList, itemHeight: number, option: Opti
     if (_isPause) {
       _offest = +(containerRef.value as HTMLElement).scrollTop.toFixed(0);
     }
+
     await checkScrollToBottom();
+
     await setScreenrenderList();
   };
 
@@ -112,6 +122,7 @@ const useVirtualList = <T, R>(getList: GetList, itemHeight: number, option: Opti
   const startAutoScroll = () => {
     const content = containerRef.value as HTMLElement;
     const { swiper } = option;
+
     if (!swiper || content.scrollHeight <= content.clientHeight) return;
 
     clearTimoutId();
@@ -120,7 +131,7 @@ const useVirtualList = <T, R>(getList: GetList, itemHeight: number, option: Opti
     if (_offest !== 0 && _offest % itemHeight === 0) {
       _autoScrollTimer = setTimeout(() => {
         startAutoScroll();
-      }, 500);
+      },1000);
     } else {
       _autoScrollReFrame = requestAnimationFrame(() => {
         content.scrollTop = _offest;
@@ -186,11 +197,6 @@ const useVirtualList = <T, R>(getList: GetList, itemHeight: number, option: Opti
   })
 
   return {
-    total,
-    pagingParams,
-    totalList,
-    hasMore,
-    loading,
     renderListRef,
     renderList,
     containerRef,

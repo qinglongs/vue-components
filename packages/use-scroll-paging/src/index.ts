@@ -64,7 +64,7 @@ function useScrollList<R = any, E = any>(getList:GetList,options: Options<E, R>)
     return { hasMore: hasMore.value, dataSource: dataSource.value }
   };
 
-  return { fetchPagingList, loading, hasMore, total: totalNumber, dataSource: dataSource ,pagingParams}
+  return { fetchPagingList, hasMore, total: totalNumber, dataSource: dataSource }
 }
 
 export default useScrollList;
