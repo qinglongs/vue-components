@@ -14,6 +14,13 @@
   "dependencies": {
     "use-scroll-paging": "^0.0.9"
   },
+  "keywords": [
+    "虚拟滚动列表",
+    "vue3虚拟滚动",
+    "无缝轮播",
+    "大数据渲染",
+    "分页加载"
+  ],
   "files": [
     "src",
     "lib"

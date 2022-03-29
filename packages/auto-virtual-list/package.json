@@ -7,7 +7,8 @@
     "虚拟滚动列表",
     "vue3虚拟滚动",
     "无缝轮播",
-    "大数据渲染"
+    "大数据渲染",
+    "分页加载"
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
