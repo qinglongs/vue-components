@@ -24,9 +24,9 @@ const useVirtualList = <T, R>(getList: GetList, itemHeight: number, option: Opti
   let _renderNumber = 0;
 
   // 定时器id相关
-  let _autoScrollTimer: number;
+  let _autoScrollTimer: NodeJS.Timeout;
   let _autoScrollReFrame = 0;
-  let _mouseTime: number;
+  let _mouseTime: NodeJS.Timeout;
 
   // 是否下一轮
   let _isNextRound = false;
@@ -67,8 +67,6 @@ const useVirtualList = <T, R>(getList: GetList, itemHeight: number, option: Opti
         }
         // 是否下一轮
         _isNextRound = !_isNextRound;
-
-
       }
       // 设置容器高度
       const placeholderHeight = totalList.value.length * itemHeight + "px";
@@ -134,8 +132,8 @@ const useVirtualList = <T, R>(getList: GetList, itemHeight: number, option: Opti
    * @method 清除定时器，关闭自动轮播
    */
   const clearTimoutId = () => {
-    clearTimeout(_mouseTime as number);
-    clearTimeout(_autoScrollTimer as number);
+    clearTimeout(_mouseTime as NodeJS.Timeout);
+    clearTimeout(_autoScrollTimer as NodeJS.Timeout);
     cancelAnimationFrame(_autoScrollReFrame);
   };
 
