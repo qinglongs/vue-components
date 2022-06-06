@@ -24,4 +24,4 @@
 | itemHeight | 列表中单个元素的高度 | number                     |   -    |
 | swiper     | 是否自动轮播         | number                     |  true  |
 | isPaging   | 是否分页             | boolean                    |  true  |
-| formatResponseData   | 格式化返回数据             | (response:any)=>                    |  true  |
+| formatResponseData   | 格式化返回数据             | (response:any)=> {total:number;data:any[]}                   |  true  |
