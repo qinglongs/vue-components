@@ -1,14 +1,14 @@
 import { reactive, ref } from 'vue';
 
-export type GetList = (params: { page: number, size: number , [key:string]:any}) => Promise<any>
+export type GetList = (params: { page: number, size: number, [key: string]: any }) => Promise<any>
 
-type Options<E, R> = {
-  formatResponseData: (data: R) => { total: number, data: any[] };
+export type Options<E, R> = {
+  formatResponseData?: (data: R) => { total: number, data: any[] };
   extraParams?: E;
-  isPaging: boolean;
+  isPaging?: boolean;
 }
 
-function useScrollList<R = any, E = any>(getList:GetList,options: Options<E, R>) {
+function useScrollList<R = any, E = any>(getList: GetList, options: Options<E, R>) {
 
   const { formatResponseData, extraParams, isPaging } = options;
 
@@ -29,10 +29,18 @@ function useScrollList<R = any, E = any>(getList:GetList,options: Options<E, R>)
   // total
   const totalNumber = ref(0);
 
-/**
-* @method 请求分页数据
-* @param init 是否初始化，初始化时不做分页参数不+1
-*/
+
+  const fetchNormalList = async () => {
+    const tmp = await getList({ page: pagingParams.page, size: pagingParams.size, ...extraParams });
+    const data = formatResponseData?.(tmp as R) || tmp;
+    dataSource.value = data;
+    return { hasMore: false, dataSource: dataSource.value }
+  }
+
+  /**
+  * @method 请求分页数据
+  * @param init 是否初始化，初始化时不做分页参数不+1
+  */
   const fetchPagingList = async (init = false) => {
     // 没有更多
     if (!hasMore.value) {
@@ -49,7 +57,7 @@ function useScrollList<R = any, E = any>(getList:GetList,options: Options<E, R>)
     loading.value = true;
     const tmp = await getList({ page: pagingParams.page, size: pagingParams.size, ...extraParams });
 
-    const { total, data } = formatResponseData(tmp as R);
+    const { total, data } = formatResponseData?.(tmp as R) || tmp;
     // 还有更多
     hasMore.value = pagingParams.page * pagingParams.size < total;
 
@@ -64,7 +72,14 @@ function useScrollList<R = any, E = any>(getList:GetList,options: Options<E, R>)
     return { hasMore: hasMore.value, dataSource: dataSource.value }
   };
 
-  return { fetchPagingList, hasMore, total: totalNumber, dataSource: dataSource }
+  const fetchList = (init = false) => {
+    return isPaging ? fetchPagingList(init) : fetchNormalList();
+  }
+
+  return { fetchList, hasMore, total: totalNumber, dataSource: dataSource }
 }
+
+
+
 
 export default useScrollList;

@@ -5,7 +5,7 @@ type Option<T, R> = {
   isPaging?: boolean;
   swiper?: boolean;
   extraParams?: T;
-  showNumber?:number;
+  showNumber?: number;
   formatResponseData?: (data: R) => any;
 }
 
@@ -20,15 +20,15 @@ const useVirtualList = <T, R>(getList: GetList, itemHeight: number, option: Opti
   // 铺满一屏需要的数据(动态的)
   const renderList = ref<any[]>([]);
 
-  const { fetchPagingList, dataSource: totalList, total } = useScrollPaging(getList, { isPaging: true, formatResponseData: (data) => data, })
+  const { fetchList, dataSource: totalList, total } = useScrollPaging(getList, { isPaging: true, formatResponseData: (data) => data, })
 
   // 铺满一屏需要的数据量
   let _renderNumber = 0;
 
   // 定时器id相关
-  let _autoScrollTimer: NodeJS.Timeout;
-  let _autoScrollReFrame = 0;
-  let _mouseTime: NodeJS.Timeout;
+  let _autoScrollTimer: ReturnType<typeof setTimeout>;
+  let _autoScrollReFrame: ReturnType<typeof requestAnimationFrame>;
+  let _mouseTime: ReturnType<typeof setTimeout>;
 
   // 是否下一轮
   let _isNextRound = false;
@@ -52,7 +52,7 @@ const useVirtualList = <T, R>(getList: GetList, itemHeight: number, option: Opti
 
     if (isToBottom) {
       // 请求分页接口
-      const { hasMore } = option.isPaging ? await fetchPagingList() : { hasMore: false };
+      const { hasMore } = await fetchList();
 
       // 分页数据加载完成
       if (!hasMore) {
@@ -139,8 +139,8 @@ const useVirtualList = <T, R>(getList: GetList, itemHeight: number, option: Opti
    * @method 清除定时器，关闭自动轮播
    */
   const clearTimoutId = () => {
-    clearTimeout(_mouseTime as NodeJS.Timeout);
-    clearTimeout(_autoScrollTimer as NodeJS.Timeout);
+    clearTimeout(_mouseTime);
+    clearTimeout(_autoScrollTimer);
     cancelAnimationFrame(_autoScrollReFrame);
   };
 
@@ -167,7 +167,7 @@ const useVirtualList = <T, R>(getList: GetList, itemHeight: number, option: Opti
    */
   const init = async () => {
 
-    await fetchPagingList(true);
+    await fetchList(true);
 
     // 设置占位容器的高度，即渲染真实的列表的高度
     (placeholderRef.value as HTMLElement).style.height = itemHeight * totalList.value.length + "px";

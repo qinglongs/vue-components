@@ -46,18 +46,17 @@ const {
   mouseleave,
   mousemove,
   onScroll,
-} = useVirtualList(getList as any, itemHeight, {
+} = useVirtualList(getList as any, {
   swiper,
   isPaging,
-  showNumber: 10,
+  itemHeight,
 });
 </script>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
 .virtual-list {
   overflow: scroll;
   height: 100%;
-  background-color: #eee;
   position: relative;
 
   .list {
