@@ -3,21 +3,32 @@
 // Check out https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup
 import VirtualList from "packages/auto-virtual-list/index.vue";
 
-const arr = new Array(30).fill(0).map((_, index) => index);
-const getaList = ({ page, size }: { page: number; size: number }) => {
-  const list = arr.slice(page * size - size, page * size);
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({ data: list, total: arr.length });
+const arr = new Array(30).fill(0).map((_, index) => `aaaaaa${index}`);
+
+const getaList = (params?: Record<string, any>) => {
+  if (params) {
+    const { page, size } = params;
+    const list = arr.slice(page * size - size, page * size);
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({ data: list, total: arr.length });
+      });
     });
-  });
+  }
+
+  return Promise.resolve(arr);
 };
 </script>
 
 <template>
   <div class="box">
-    <VirtualList :get-list="getaList" :item-height="100">
-      <template v-slot:default="{item}">
+    <VirtualList
+      :is-paging="true"
+      swiper
+      :get-list="getaList"
+      :item-height="100"
+    >
+      <template v-slot:default="{ item }">
         <div class="list-item">{{ item }}</div>
       </template>
     </VirtualList>

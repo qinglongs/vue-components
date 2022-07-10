@@ -5,8 +5,7 @@ type Option<T, R> = {
   isPaging?: boolean;
   swiper?: boolean;
   extraParams?: T;
-  showNumber?:number;
-  formatResponseData?: (data: R) => any;
+  formatResponseData?: (data: R) => { total: number, data: any[] };
 }
 
 const useVirtualList = <T, R>(getList: GetList, itemHeight: number, option: Option<T, R> = { swiper: true }) => {
@@ -19,16 +18,16 @@ const useVirtualList = <T, R>(getList: GetList, itemHeight: number, option: Opti
 
   // 铺满一屏需要的数据(动态的)
   const renderList = ref<any[]>([]);
-
-  const { fetchPagingList, dataSource: totalList, total } = useScrollPaging(getList, { isPaging: true, formatResponseData: (data) => data, })
+  
+  const { fetchPagingList, dataSource: totalList, total } = useScrollPaging(getList, { isPaging: option.isPaging, formatResponseData:option.formatResponseData })
 
   // 铺满一屏需要的数据量
   let _renderNumber = 0;
 
   // 定时器id相关
-  let _autoScrollTimer: NodeJS.Timeout;
+  let _autoScrollTimer: ReturnType<typeof setTimeout>;
   let _autoScrollReFrame = 0;
-  let _mouseTime: NodeJS.Timeout;
+  let _mouseTime: ReturnType<typeof setTimeout>;
 
   // 是否下一轮
   let _isNextRound = false;
@@ -49,9 +48,11 @@ const useVirtualList = <T, R>(getList: GetList, itemHeight: number, option: Opti
     // 是否滚动到最底部 +1是为了弥补手动滚无法正确计算
     const isToBottom =
       +(container.clientHeight + container.scrollTop).toFixed(0) + 1 >= container.scrollHeight;
-
+    
+    
     if (isToBottom) {
-      // 请求分页接口
+
+      // 发起数据请求
       const { hasMore } = option.isPaging ? await fetchPagingList() : { hasMore: false };
 
       // 分页数据加载完成
@@ -60,10 +61,10 @@ const useVirtualList = <T, R>(getList: GetList, itemHeight: number, option: Opti
           // 第一次触底
           totalList.value = totalList.value.concat(totalList.value.slice(0, _renderNumber));
         } else {
-
           // 第二次触底重置list
           totalList.value = totalList.value.slice(0, total.value);
-
+        console.log(total.value);
+        
           // 重新设置偏移度 无缝滚动的核心计算  超出视窗的元素出现，滚动条才会发生变化
           _offest = itemHeight * _renderNumber - (containerRef.value as HTMLElement).clientHeight;
 
@@ -94,7 +95,7 @@ const useVirtualList = <T, R>(getList: GetList, itemHeight: number, option: Opti
       activeIndex,
       activeIndex + _renderNumber
     );
-
+    
     // 设置偏移度 开启gpu硬件加速
     (renderListRef.value as HTMLElement).style.transform = `translate3d(0,${activeIndex * itemHeight}px,0)`;
   };
@@ -139,8 +140,8 @@ const useVirtualList = <T, R>(getList: GetList, itemHeight: number, option: Opti
    * @method 清除定时器，关闭自动轮播
    */
   const clearTimoutId = () => {
-    clearTimeout(_mouseTime as NodeJS.Timeout);
-    clearTimeout(_autoScrollTimer as NodeJS.Timeout);
+    clearTimeout(_mouseTime);
+    clearTimeout(_autoScrollTimer);
     cancelAnimationFrame(_autoScrollReFrame);
   };
 

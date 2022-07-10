@@ -25,15 +25,15 @@ type Props = {
   itemHeight: number;
   isPaging: boolean;
   swiper: boolean;
-  getList: (params: any) => Promise<any>;
+  getList: (params?: Record<string, any>) => Promise<any>;
 };
 
 const { itemHeight, getList, isPaging, swiper } = withDefaults(
   defineProps<Props>(),
   {
     itemHeigh: 0,
-    isPaging: true,
-    swiper: true,
+    isPaging: false,
+    swiper: false,
     getList: () => Promise.resolve(),
   }
 );
@@ -49,7 +49,6 @@ const {
 } = useVirtualList(getList as any, itemHeight, {
   swiper,
   isPaging,
-  showNumber: 10,
 });
 </script>
 
