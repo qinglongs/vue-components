@@ -1,6 +1,6 @@
 {
   "name": "use-scroll-paging",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "vue3分页请求hooks",
   "main": "src/index.ts",
   "scripts": {
